@@ -2,7 +2,7 @@
 
 require_once '../Input.php';
 require_once '../Functions.php';
-require_once '../db_connect.php';
+require_once '../testdb.php';
 
 function pageController($dbc)
 {
@@ -40,6 +40,7 @@ SQL;
 
 	return $data;
 }
+
 
 function validateDate($date)
 {
