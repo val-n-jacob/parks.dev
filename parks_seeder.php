@@ -32,5 +32,5 @@ $stmt = $dbc->prepare($query);
 foreach ($parks as $park) {
     Functions::bindAll($park, $stmt);
 
-    $stmt->execete();
+    $stmt->execute();
 }
