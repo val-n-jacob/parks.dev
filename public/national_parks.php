@@ -41,8 +41,6 @@ SQL;
 	return $data;
 }
 
-var_dump($_POST);
-
 function validateDate($date)
 {
 	$d = DateTime::createFromFormat('Y-m-d', $date);
