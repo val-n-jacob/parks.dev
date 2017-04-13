@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/Input.php';
-require __DIR__ . '/testdb.php';
+require __DIR__ . '/../Input.php';
+require __DIR__ . '/../testdb.php';
 
 $stmt = $dbc->query('SELECT * FROM national_parks');
 $parks = $stmt->fetchALL(PDO::FETCH_ASSOC);
@@ -27,16 +27,16 @@ function getPaginatedParks($connection, $page, $limit) {
 	return $statement->fetchAll(PDO::FETCH_ASSOC); 
 }
 
-function handleOutOfRangeRequests($page, $lastPage) {
-	// protect from looking at negative pages, too high pages, and non-numeric pages
-	if($page < 1 || !is_numeric($page)) {
-		header("location: national_parks.php?page=1");
-		die;
-	} else if($page > $lastPage) {
-		header("location: national_parks.php?page=$lastPage");
-		die;
-	}
-}
+// function handleOutOfRangeRequests($page, $lastPage) {
+// 	// protect from looking at negative pages, too high pages, and non-numeric pages
+// 	if($page < 1 || !is_numeric($page)) {
+// 		header("location: national_parks.php?page=1");
+// 		die;
+// 	} else if($page > $lastPage) {
+// 		header("location: national_parks.php?page=$lastPage");
+// 		die;
+// 	}
+// }
 
 function pageController($connection) {
 
@@ -47,7 +47,7 @@ function pageController($connection) {
 
 	$lastPage = getLastPage($connection, $limit);
 
-	handleOutOfRangeRequests($page, $lastPage);
+	// handleOutOfRangeRequests($page, $lastPage);
 
 	$data['parks'] = getPaginatedParks($connection, $page, $limit);
 	$data['page'] = $page;
@@ -72,31 +72,40 @@ extract(pageController($dbc));
 		<meta name="Keywords" content="">
 	    <meta name="author" content="">
 		<title></title>
-	
+
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="parkz.css">
 	
 	<!-- Custom CSS -->
-	<style></style>
+	<style>
+		body {
+    background-color:#F7F7F7;
+}
+	</style>
 	</head>
 	<body>
 		<main class="container">
-			<h1>Welcome to National Parks</h1>
+		<h1>Welcome to National Parks</h1>
+		<div class = "box">
+			
 
 			<section class="parks">
-				<table class="table table-striped">
+				<table class="table tablz">
 					<tr>
-						<th>Park Name: </th>
-						<th>Location: </th>
-						<th>Area in Acres: </th>
-						<th>Date Established: </th>
+						<th class="activez">Park Name: </th>
+						<th class="activez">Location: </th>
+						<th class="activez">Area in Acres: </th>
+						<th class="activez">Date Established: </th>
+						<th class="activez">Description: </th>
 					</tr>
 					<?php foreach($parks as $park): ?>
 						<tr>
-							<td><?= $park['name'] ?></td>
-							<td><?= $park['location'] ?></td>
-							<td><?= $park['area_in_acres']?></td>
-							<td><?= $park['date_established']?></td>
+							<td class="activez"><?= $park['name'] ?></td>
+							<td class="activez"><?= $park['location'] ?></td>
+							<td class="activez"><?= $park['area_in_acres']?> acres</td>
+							<td class="activez"><?= $park['date_established']?></td>
+							<td class="activez"><?= $park['description']?></td>
 						</tr>
 					<?php endforeach; ?>	
 				</table>
@@ -110,8 +119,9 @@ extract(pageController($dbc));
 				<?php endif; ?>
 
 			</section>
+			</div>
 		</main>
-	=
+
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 	
 		<!-- Latest compiled and minified JavaScript -->

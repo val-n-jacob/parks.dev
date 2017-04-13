@@ -1,0 +1,31 @@
+
+
+tr:nth-child(even) {
+	font-size: 14px;
+	background-color: rgba(245, 245, 245, 0.37);
+
+	
+}
+
+tr:nth-child(odd) {
+
+	background-color: rgba(245, 245, 245, 0.51);
+	font-size: 14px;
+	
+}
+.tablez{
+	border-radius: 50px;
+}
+
+.box{
+	border-radius: 20px;
+	padding: 20px;
+	background-color: #B5E2E2;
+}
+
+#welcomez{
+	color: gray;
+	font-family: 'Spirax';
+}
+
+}
