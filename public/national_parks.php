@@ -97,7 +97,7 @@ if (!empty($_POST)) add($dbc);
 <head>
 	<title>All Parks</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-	<link rel="stylesheet" href="./css/national_parks.css"></style>
+	<link rel="stylesheet" href="./national_parks.css"></style>
 </head>
 <body>
 	<main>
@@ -140,6 +140,6 @@ if (!empty($_POST)) add($dbc);
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
-	<script src="./js/national_parks.js"></script>
+	<script src="./national_parks.js"></script>
 </body>
 </html>
