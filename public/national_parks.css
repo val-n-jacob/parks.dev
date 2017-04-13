@@ -1,0 +1,66 @@
+main {
+	margin: auto;
+	width: 90%;
+}
+
+a {
+	cursor: pointer;
+}
+
+textarea:focus {
+	outline: none;
+}
+
+.table-headers>th.table-header {
+	vertical-align: middle;
+}
+
+.overflow, .expanded + span {
+	display: none;
+}
+
+.expanded {
+	display: initial;
+}
+
+.name {
+	width: 15%;
+}
+
+.location {
+	width: 20%;
+}
+
+.date_established {
+	width: 6em;
+}
+
+.area_in_acres {
+	width: 8em;
+}
+
+.add {
+	width: 100%;
+	background-color: transparent;
+	border: none;
+	resize: none;
+	overflow: visible;
+	padding: 8px;
+}
+
+#prev {
+	float: left;
+}
+
+#next {
+	float: right;
+}
+
+#add-row>td ~ td {
+	padding: 0;
+	overflow: auto;
+}
+
+h1, th, #add-row>td:first-child {
+	text-align: center;
+}
