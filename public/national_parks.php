@@ -1,134 +1,146 @@
 <?php
-require __DIR__ . '/../Input.php';
-require __DIR__ . '/../testdb.php';
 
-$stmt = $dbc->query('SELECT * FROM national_parks');
-$parks = $stmt->fetchALL(PDO::FETCH_ASSOC);
+require_once '../Input.php';
+require_once '../Functions.php';
+require_once '../testdb.php';
 
-echo "Columns: " . $stmt->columnCount() . PHP_EOL;
-while ($row = $stmt->fetch()) {
-    print_r($stmt->fetch(PDO::FETCH_BOTH));
-}
-
-
-function getLastPage($connection, $limit) {
-	$statement = $connection->query("SELECT count(*) from national_parks");
-	$count = $statement->fetch()[0]; // to get the count
-	$lastPage = ceil($count / $limit);
-	return $lastPage;
-}
-
-function getPaginatedParks($connection, $page, $limit) {
-	// offset = (pageNumber -1) * limit
-	$offset = ($page - 1) * $limit;
-
-	$select = "SELECT * from national_parks limit $limit offset $offset";
-	$statement = $connection->query($select);
-	return $statement->fetchAll(PDO::FETCH_ASSOC); 
-}
-
-// function handleOutOfRangeRequests($page, $lastPage) {
-// 	// protect from looking at negative pages, too high pages, and non-numeric pages
-// 	if($page < 1 || !is_numeric($page)) {
-// 		header("location: national_parks.php?page=1");
-// 		die;
-// 	} else if($page > $lastPage) {
-// 		header("location: national_parks.php?page=$lastPage");
-// 		die;
-// 	}
-// }
-
-function pageController($connection) {
-
+function pageController($dbc)
+{
 	$data = [];
-	
-	$limit = 4;
-	$page = Input::get('page', 1);
 
-	$lastPage = getLastPage($connection, $limit);
+	$data['pageno'] = Input::get('p', 1);
 
-	// handleOutOfRangeRequests($page, $lastPage);
+	$offset = ($data['pageno'] - 1) * 4;
 
-	$data['parks'] = getPaginatedParks($connection, $page, $limit);
-	$data['page'] = $page;
-	$data['lastPage'] = $lastPage;
+	$limit = Input::get('l', 4);
+
+	$query = <<<SQL
+	SELECT *
+	FROM national_parks
+	LIMIT ?, ?;
+SQL;
+
+	$stmt = $dbc->prepare($query);
+
+	Functions::bindAll([$offset, $limit], $stmt);
+
+	$stmt->execute();
+
+	$data['parks'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	$data['headers'] = ['name' => 'Name', 'location' => 'Location', 'date_established' => 'Date Established', 'area_in_acres' => 'Area in Acres', 'description' => 'Description'];
+
+	Functions::bindAll([0, PHP_INT_MAX], $stmt);
+
+	$stmt->execute();
+
+	$rows = $stmt->rowCount();
+
+	$data['pages'] = $rows === 0 ? 1 : (int) ceil($rows / 4);
 
 	return $data;
 }
 
+
+function validateDate($date)
+{
+	$d = DateTime::createFromFormat('Y-m-d', $date);
+	return $d && $d->format('Y-m-d') === $date;
+}
+
+function getNewRow() {
+	$row = [];
+	$row['name'] = Input::get('name');
+	$row['location'] = Input::get('location');
+	$row['date_established'] = Input::get('date_established');
+	$row['area_in_acres'] = Input::get('area_in_acres');
+	$row['description'] = Input::get('description');
+
+	foreach ($row as $key => &$column) {
+		$column = Functions::escape($column);
+		if (empty($column) and $key !== 'description') return NULL;
+	}
+
+	if (empty($row['description'])) $row['description'] = NULL;
+	$row['area_in_acres'] = (float) $row['area_in_acres'];
+
+	if (!validateDate($row['date_established'])) return NULL;
+	
+	return $row;
+
+}
+
+function add($dbc) {
+	$row = getNewRow();
+
+	if ($row === NULL) return;
+
+	$query = <<<SQL
+	INSERT INTO national_parks (name, location, date_established, area_in_acres, description)
+	VALUES (:name, :location, :date_established, :area_in_acres, :description);
+SQL;
+
+	$stmt = $dbc->prepare($query);
+
+	Functions::bindAll($row, $stmt);
+
+	$stmt->execute();
+}
+
 extract(pageController($dbc));
 
+if (!empty($_POST)) add($dbc);
 
 ?>
+
 <!DOCTYPE html>
-	<html lang="en-us">
-	<head>
-		<meta charset="utf-8">
-	    <meta http-equiv="x-ua-compatible" content="ie=edge">
-		
-	    <meta name="viewport" content="width=device-width, initial-scale=1">
-		
-		<meta name="description" content="">
-		<meta name="Keywords" content="">
-	    <meta name="author" content="">
-		<title></title>
-
-	<!-- Latest compiled and minified CSS -->
+<html>
+<head>
+	<title>All Parks</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-	<link rel="stylesheet" href="parkz.css">
-	
-	<!-- Custom CSS -->
-	<style>
-		body {
-    background-color:#F7F7F7;
-}
-	</style>
-	</head>
-	<body>
-		<main class="container">
-		<h1>Welcome to National Parks</h1>
-		<div class = "box">
-			
-
-			<section class="parks">
-				<table class="table tablz">
-					<tr>
-						<th class="activez">Park Name: </th>
-						<th class="activez">Location: </th>
-						<th class="activez">Area in Acres: </th>
-						<th class="activez">Date Established: </th>
-						<th class="activez">Description: </th>
-					</tr>
-					<?php foreach($parks as $park): ?>
-						<tr>
-							<td class="activez"><?= $park['name'] ?></td>
-							<td class="activez"><?= $park['location'] ?></td>
-							<td class="activez"><?= $park['area_in_acres']?> acres</td>
-							<td class="activez"><?= $park['date_established']?></td>
-							<td class="activez"><?= $park['description']?></td>
-						</tr>
-					<?php endforeach; ?>	
-				</table>
-
-				<?php if($page > 1): ?>
-					<a href="?page=<?= $page - 1 ?>"><span class="glyphicon glyphicon-chevron-left">Previous</span></a>
-				<?php endif; ?>
-				
-				<?php if($page < $lastPage): ?>	
-					<a class="pull-right" href="?page=<?= $page + 1 ?>"><span class="glyphicon glyphicon-chevron-right">Next</span></a>
-				<?php endif; ?>
-
-			</section>
+	<link rel="stylesheet" href="./national_parks.css"></style>
+</head>
+<body>
+	<main>
+		<form action="./national_parks.php" method="POST">
+			<table class="table table-bordered table-striped">
+				<h1>National Parks</h1>
+				<?= Functions::renderTable($parks, $headers, ['id']); ?>
+				<tr id="add-row">
+					<td colspan="100%">
+						<a id="add">Add</a>
+					</td>
+					<td class="hidden">
+						<textarea class="add" rows="1" id="add-name" name="name" required></textarea>
+					</td>
+					<td class="hidden">
+						<textarea class="add" rows="1" id="add-location" name="location" required></textarea>
+					</td>
+					<td class="hidden">
+						<textarea class="add" rows="1" id="add-date" name="date_established" required></textarea>
+					</td>
+					<td class="hidden">
+						<textarea class="add" rows="1" id="add-area" name="area_in_acres" required></textarea>
+					</td>
+					<td class="hidden">
+						<textarea class="add" rows="1" id="add-description" name="description"></textarea>
+					</td>
+				</tr>
+			</table>
+			<div class="text-center">
+				<button type="submit" class="hidden btn btn-primary" id="submit">Submit</button>
 			</div>
-		</main>
-
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-	
-		<!-- Latest compiled and minified JavaScript -->
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	
-		<!-- Your custom JS goes here -->
-		<script type="text/javascript"></script>
-	</body>
-	</html>
-	
+		</form>
+		<?php if ($pageno > 1): ?>
+			<a href="./national_parks.php?p=<?= $pageno - 1 ?>" id="prev">&#60; Prev</a>
+		<?php endif ?>
+		<?php if ($pageno < $pages): ?>
+			<a href="./national_parks.php?p=<?= $pageno + 1 ?>" id="next">Next &#62;</a>
+		<?php endif ?>
+	</main>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/autosize.js/3.0.20/autosize.min.js"></script>
+	<script src="./national_parks.js"></script>
+</body>
+</html>
