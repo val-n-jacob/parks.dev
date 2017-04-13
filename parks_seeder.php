@@ -1,5 +1,6 @@
 <?php
-require __DIR__ . '/testdb.php';
+require_once __DIR__ . '/testdb.php';
+require_once __DIR__ . '/Functions.php';
 
 
 
@@ -21,17 +22,15 @@ $parks = [
 
 ];
 
-foreach ($parks as $park) {
-    $query = <<<SQL
+$query = <<<SQL
     INSERT INTO national_parks (name, location, date_established, area_in_acres, description)
-    VALUES (
-        '{$park['name']}',
-        '{$park['location']}',
-        '{$park['date_established']}',
-        '{$park['area_in_acres']}',
-        '{$park['description']}'
-    );
+    VALUES (:name, :location, :date_established, :area_in_acres, :description);
 SQL;
 
-    $dbc->exec($query);
+$stmt = $dbc->prepare($query);
+
+foreach ($parks as $park) {
+    Functions::bindAll($park, $stmt);
+
+    $dbc->exececute();
 }
