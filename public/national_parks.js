@@ -1,10 +1,10 @@
 $(document).ready(function() {
 	var limit = 80,
-		evt = document.createEvent('Event'),
+		update = document.createEvent('Event'),
 		oldValue_date = '',
 		oldValue_area = '';
 
-	evt.initEvent('autosize:update');
+	update.initEvent('autosize:update');
 
 	function validateDate(date) {
 		var max = 0;
@@ -30,12 +30,25 @@ $(document).ready(function() {
 		return true;
 	}
 
-	$('.description').each(function(index, element) {
-		if (element.innerText.length > limit) {
-			element.innerHTML = element.innerHTML.substring(0, limit) + '<span class="overflow">' + element.innerHTML.substring(limit) + '</span><span>...</span>';
-			$(element).css('cursor', 'pointer');
-			$(element).click(function(event) {
-				$(this).children('.overflow').toggleClass('expanded');
+	function isEllipsisActive(e) {
+	     return (e.offsetWidth < e.scrollWidth);
+	}
+
+	function largestTextarea() {
+		var maxHeight = 0;
+
+		$('.add').each(function(index, el) {
+			if (parseInt($(el).css('height')) > maxHeight) maxHeight = parseInt($(el).css('height'));
+		});
+
+		return maxHeight;
+	}
+
+	$('.text-collapse').each(function(index, el) {
+		if (isEllipsisActive(el)) {
+			$(el).children('.content-text').css('cursor', 'pointer')
+			.click(function() {
+				$(this).parent('td').toggleClass('text-collapse');
 			});
 		}
 	});
@@ -43,11 +56,21 @@ $(document).ready(function() {
 	$('#add').click(function() {
 		$('#add-row').children().toggleClass('hidden');
 		$('button').toggleClass('hidden');
+		$('.add').css('height', '');
 	});
 
 	$('.add').on('input', function(e) {
+		var minheight;
 		this.value = this.value.replace(/\n/g, '');
-		this.dispatchEvent(evt);
+		$('.add').css('min-height', '');
+		$('.add').each(function(index, el) {
+			el.dispatchEvent(update);
+		});
+		minHeight = largestTextarea();
+		$('.add').css('min-height', minHeight)
+		.each(function(index, el) {
+			el.dispatchEvent(update);
+		});
 		this.setCustomValidity('');
 		$(this).parent().css('background-color', 'initial');
 	}).keypress(function(e) {
@@ -55,15 +78,6 @@ $(document).ready(function() {
 	}).on('invalid', function(e) {
 		this.setCustomValidity(' ');
 		$(this).parent().css('background-color', '#FFA09C');
-	}).on('autosize:resized', function(e) {
-		var largest = $(this).parent('td').index();
-		$('#add-row').children('td').each(function(index, el) {
-			if (index === largest) {
-				$(el).children('textarea').css('min-height', 'initial');
-			} else if (index !== 0) {
-				$(el).children('textarea').css('min-height', $('#add-row').children('td').eq(largest).children('textarea').css('height'));
-			}
-		});
 	});
 
 	$('#add-date').on('input', function(e) {
