@@ -47,10 +47,10 @@ class Functions {
 		}
 
 		foreach ($content as $row) {
-			$html .= '<tr>';
+			$html .= '<tr class="park">';
 			foreach ($row as $key => $column) {
 				if (in_array($key, $exceptions, true)) continue;
-				$html .= "<td class=\"$key\">" . self::escape($column) . '</td>';
+				$html .= "<td class=\"$key text-collapse\"><span class=\"content-text\">" . self::escape($column) . '</span></td>';
 			}
 			$html .= '</tr>';
 		}
