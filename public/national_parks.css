@@ -1,3 +1,7 @@
+body{
+	background-color: #EFEFEF;
+}
+
 main {
 	margin: auto;
 	width: 90%;
@@ -63,4 +67,38 @@ textarea:focus {
 
 h1, th, #add-row>td:first-child {
 	text-align: center;
+}
+
+
+tr:nth-child(even) {
+	font-size: 14px;
+	background-color: rgba(245, 245, 245, 0.37);
+
+	
+}
+
+tr:nth-child(odd) {
+
+	background-color: rgba(245, 245, 245, 0.51);
+	font-size: 14px;
+	
+}
+.tablez{
+	border-radius: 50px;
+}
+
+.box{
+	border-radius: 20px;
+	padding: 20px;
+	background-color: #B5E2E2;
+}
+
+h1{
+	color: #9A9E6E;
+	font-family: 'Quicksand';
+}
+
+table{
+	color: #56554A;
+	font-family: 'Quicksand';
 }

@@ -98,35 +98,40 @@ if (!empty($_POST)) add($dbc);
 <head>
 	<title>All Parks</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Quicksand|Spirax" rel="stylesheet">
 	<link rel="stylesheet" href="./national_parks.css"></style>
+
 </head>
 <body>
 	<main>
+		<h1>National Parks</h1>
 		<form action="./national_parks.php" method="POST">
-			<table class="table table-bordered table-striped">
-				<h1>National Parks</h1>
-				<?= Functions::renderTable($parks, $headers, ['id']); ?>
-				<tr id="add-row">
-					<td colspan="100%">
-						<a id="add">Add</a>
-					</td>
-					<td class="hidden">
-						<textarea class="add" rows="1" id="add-name" name="name" required></textarea>
-					</td>
-					<td class="hidden">
-						<textarea class="add" rows="1" id="add-location" name="location" required></textarea>
-					</td>
-					<td class="hidden">
-						<textarea class="add" rows="1" id="add-date" name="date_established" required></textarea>
-					</td>
-					<td class="hidden">
-						<textarea class="add" rows="1" id="add-area" name="area_in_acres" required></textarea>
-					</td>
-					<td class="hidden">
-						<textarea class="add" rows="1" id="add-description" name="description"></textarea>
-					</td>
-				</tr>
-			</table>
+			<div class="panel panel-default">
+				<table class="table table-bordered table-striped">
+					<?= Functions::renderTable($parks, $headers, ['id']); ?>
+					<tr id="add-row">
+						<td colspan="100%">
+							<a id="add">Add</a>
+						</td>
+						<td class="hidden">
+							<textarea class="add" rows="1" id="add-name" name="name" required></textarea>
+						</td>
+						<td class="hidden">
+							<textarea class="add" rows="1" id="add-location" name="location" required></textarea>
+						</td>
+						<td class="hidden">
+							<textarea class="add" rows="1" id="add-date" name="date_established" required></textarea>
+						</td>
+						<td class="hidden">
+							<textarea class="add" rows="1" id="add-area" name="area_in_acres" required></textarea>
+						</td>
+						<td class="hidden">
+							<textarea class="add" rows="1" id="add-description" name="description"></textarea>
+						</td>
+					</tr>
+				</table>
+			</div>
+
 			<div class="text-center">
 				<button type="submit" class="hidden btn btn-primary" id="submit">Submit</button>
 			</div>
@@ -137,6 +142,7 @@ if (!empty($_POST)) add($dbc);
 		<?php if ($pageno < $pages): ?>
 			<a href="./national_parks.php?p=<?= $pageno + 1 ?>" id="next">Next &#62;</a>
 		<?php endif ?>
+	
 	</main>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>

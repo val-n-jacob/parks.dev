@@ -1,4 +1,7 @@
 
+body{
+	background-color: red;
+}
 
 tr:nth-child(even) {
 	font-size: 14px;
