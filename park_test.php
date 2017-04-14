@@ -2,7 +2,16 @@
 
 require_once 'Park.php';
 
-echo Park::count();
+
+$park = new Park();
+       $park->name = 'Acadia';
+       $park->location = 'Maine';
+       $park->areaInAcres = 48995.91;
+       $park->dateEstablished = '1919-02-26';
+       $park->description = 'Cool park!';
+ $park->insert();
+
+ echo Park::count();
 
 
        $parks = Park::all();
